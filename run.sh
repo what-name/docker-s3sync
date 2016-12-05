@@ -14,10 +14,10 @@ S3CMDPARAMS=${S3CMDPARAMS}
 LOCKFILE="/tmp/aws-s3.lock"
 LOG="/var/log/cron.log"
 
-echo "[default]" >> /root/.aws/credentials
+echo "[default]" > /root/.aws/credentials
 echo "aws_access_key_id = $ACCESS_KEY" >> /root/.aws/credentials
 echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
-echo "[default]" >> /root/.aws/config
+echo "[default]" > /root/.aws/config
 
 if [ ! -e $LOG ]; then
   touch $LOG
