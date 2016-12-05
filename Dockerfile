@@ -12,8 +12,8 @@ RUN pip install awscli && \
   rm -rf /tmp/pip_build_root/
 
 RUN mkdir -p /data
+RUN mkdir -p /root/.aws
 
-ADD s3cmd.cfg /root/.s3cfg
 ADD run.sh /
 
 ENTRYPOINT ["/run.sh"]
