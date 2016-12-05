@@ -14,8 +14,10 @@ S3CMDPARAMS=${S3CMDPARAMS}
 LOCKFILE="/tmp/s3cmd.lock"
 LOG="/var/log/cron.log"
 
-echo "access_key=$ACCESS_KEY" >> /root/.s3cfg
-echo "secret_key=$SECRET_KEY" >> /root/.s3cfg
+echo "[default]" >> /root/.aws/credentials
+echo "aws_access_key_id = $ACCESS_KEY" >> /root/.aws/credentials
+echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
+echo "[default]" >> /root/.aws/config
 
 if [ ! -e $LOG ]; then
   touch $LOG
@@ -51,8 +53,8 @@ elif [[ $OPTION = "backup" ]]; then
     touch $LOCKFILE
   fi
 
-  echo "Executing s3cmd sync $S3CMDPARAMS /data/ $S3PATH..." | tee -a $LOG
-  /usr/local/bin/s3cmd sync $S3CMDPARAMS /data/ $S3PATH 2>&1 | tee -a $LOG
+  echo "Executing aws sync /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
+  /usr/local/bin/aws sync /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
   rm -f $LOCKFILE
   echo "Finished sync: $(date)" | tee -a $LOG
 
