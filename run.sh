@@ -11,7 +11,7 @@ S3PATH=${S3PATH:?"S3_PATH required"}
 CRON_SCHEDULE=${CRON_SCHEDULE:-0 * * * *}
 S3CMDPARAMS=${S3CMDPARAMS}
 
-LOCKFILE="/tmp/s3cmd.lock"
+LOCKFILE="/tmp/aws-s3.lock"
 LOG="/var/log/cron.log"
 
 echo "[default]" >> /root/.aws/credentials
@@ -44,7 +44,7 @@ if [[ $OPTION = "start" ]]; then
   exec tail -f $LOG 2> /dev/null
 
 elif [[ $OPTION = "backup" ]]; then
-  echo "Starting sync: $(date)" | tee $LOG
+  echo "Starting copy: $(date)" | tee $LOG
 
   if [ -f $LOCKFILE ]; then
     echo "$LOCKFILE detected, exiting! Already running?" | tee -a $LOG
@@ -53,10 +53,10 @@ elif [[ $OPTION = "backup" ]]; then
     touch $LOCKFILE
   fi
 
-  echo "Executing aws sync /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
-  /usr/local/bin/aws sync /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
+  echo "Executing aws cp /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
+  /usr/local/bin/aws cp /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
   rm -f $LOCKFILE
-  echo "Finished sync: $(date)" | tee -a $LOG
+  echo "Finished copy: $(date)" | tee -a $LOG
 
 else
   echo "Unsupported option: $OPTION" | tee -a $LOG
