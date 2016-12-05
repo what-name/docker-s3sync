@@ -1,7 +1,9 @@
 # S3Backup
 
 S3Backup is a Docker container which backs up one or more folders to S3 using
-the aws cli tool.
+the aws cli tool. This is forked from joch's original S3Backup container but has
+been modified to make use of the aws cli rather than s3cmd as I had problems
+getting s3cmd to sync files containing special characters.
 
 To tell s3backup what to back up, mount your desired volumes under the
 `/data` directory.
