@@ -53,8 +53,8 @@ elif [[ $OPTION = "backup" ]]; then
     touch $LOCKFILE
   fi
 
-  echo "Executing aws s3 cp /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
-  /usr/local/bin/aws s3 cp /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
+  echo "Executing aws s3 sync /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
+  /usr/local/bin/aws s3 sync /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
   rm -f $LOCKFILE
   echo "Finished copy: $(date)" | tee -a $LOG
 
