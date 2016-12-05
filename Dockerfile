@@ -5,10 +5,10 @@ ENV DEBIAN_FRONTEND="noninteractive" HOME="/root" LC_ALL="C.UTF-8" LANG="en_US.U
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      cron python python-magic python-pip && \
+      cron python3 python3-magic python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install awscli && \
+RUN pip3 install awscli && \
   rm -rf /tmp/pip_build_root/
 
 RUN mkdir -p /data
