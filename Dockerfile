@@ -1,6 +1,6 @@
 FROM debian:jessie
 MAINTAINER Paul Wiggett <mrporcles@gmail.com>
-#AWS CLI Version 1.11.80
+#AWS CLI Version 1.11.153
 
 ENV DEBIAN_FRONTEND="noninteractive" HOME="/root" LC_ALL="C.UTF-8" LANG="en_US.UTF-8" LANGUAGE="en_US.UTF-8"
 
