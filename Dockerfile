@@ -10,7 +10,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install setuptools wheel
-RUN pip3 awscli && \
+RUN pip3 install awscli && \
   rm -rf /tmp/pip_build_root/
 
 RUN mkdir -p /data
