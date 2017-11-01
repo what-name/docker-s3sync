@@ -9,7 +9,7 @@ RUN apt-get update && \
       cron python3 python3-magic python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install awscli && \
+RUN pip3 install setuptools wheel awscli && \
   rm -rf /tmp/pip_build_root/
 
 RUN mkdir -p /data
