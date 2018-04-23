@@ -17,6 +17,6 @@ RUN mkdir -p /data && \
 
 ADD https://raw.githubusercontent.com/mrporcles/s3backup/master/run.sh /
 
-RUN chmod 755 /run.sh
+RUN chmod +x /run.sh
 ENTRYPOINT ["/run.sh"]
 CMD ["start"]
