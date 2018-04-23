@@ -8,12 +8,11 @@ RUN apt-get update && \
       cron python3 python3-magic python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install setuptools wheel
-RUN pip3 install awscli && \
+RUN pip3 install setuptools wheel awscli && \
   rm -rf /tmp/pip_build_root/
 
-RUN mkdir -p /data
-RUN mkdir -p /root/.aws
+RUN mkdir -p /data && \
+  mkdir -p /root/.aws
 
 ADD https://raw.githubusercontent.com/mrporcles/s3backup/master/run.sh /
 
