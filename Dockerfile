@@ -16,7 +16,7 @@ RUN pip3 install awscli && \
 RUN mkdir -p /data
 RUN mkdir -p /root/.aws
 
-ADD run.sh /
+ADD https://raw.githubusercontent.com/mrporcles/s3backup/master/run.sh /
 
 ENTRYPOINT ["/run.sh"]
 CMD ["start"]
