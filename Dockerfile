@@ -18,5 +18,6 @@ RUN mkdir -p /root/.aws
 
 ADD https://raw.githubusercontent.com/mrporcles/s3backup/master/run.sh /
 
+RUN chmod +x /run.sh
 ENTRYPOINT ["/run.sh"]
 CMD ["start"]
