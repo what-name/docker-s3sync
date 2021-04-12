@@ -15,11 +15,14 @@ S3SYNCPARAMS=${S3SYNCPARAMS}
 LOCKFILE="/tmp/aws-s3.lock"
 LOG="/var/log/cron.log"
 
-echo "[default]" > /root/.aws/credentials
+echo "[default_source]" > /root/.aws/credentials
 echo "aws_access_key_id = $ACCESS_KEY" >> /root/.aws/credentials
 echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
-echo "[default]" > /root/.aws/config
-echo "role_arn=$ROLEARN" > /root/.aws/config
+echo "[default_source]" > /root/.aws/config
+echo "" >> /root/.aws/config
+echo "[default]" >> /root/.aws/config
+echo "role_arn=$ROLEARN" >> /root/.aws/config
+echo "source_profile=default_source" >> /root/.aws/config
 
 if [ ! -e $LOG ]; then
   touch $LOG
@@ -34,10 +37,10 @@ if [[ $OPTION = "start" ]]; then
   ls -F /data
   echo
 
-  ##### THIS IS NOT GONNA WORK!!! FIXME 
   echo "Adding CRON schedule: $CRON_SCHEDULE"
   CRONENV="$CRONENV ACCESS_KEY=$ACCESS_KEY"
   CRONENV="$CRONENV SECRET_KEY=$SECRET_KEY"
+  CRONENV="$CRONENV ROLEARN=$ROLEARN"
   CRONENV="$CRONENV S3PATH=$S3PATH"
   CRONENV="$CRONENV S3SYNCPARAMS=\"$S3SYNCPARAMS\""
   echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" >> $CRONFILE
