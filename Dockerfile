@@ -1,5 +1,5 @@
 FROM debian:latest
-MAINTAINER Paul Wiggett <mrporcles@gmail.com>
+LABEL Chris Nagy <docker@heyitschris.com>
 
 ENV DEBIAN_FRONTEND="noninteractive" HOME="/root" LC_ALL="C.UTF-8" LANG="en_US.UTF-8" LANGUAGE="en_US.UTF-8"
 
@@ -15,7 +15,7 @@ RUN pip3 install awscli && \
 RUN mkdir -p /data && \
   mkdir -p /root/.aws
 
-ADD https://raw.githubusercontent.com/mrporcles/s3backup/master/run.sh /
+ADD run.sh /
 
 RUN chmod +x /run.sh
 ENTRYPOINT ["/run.sh"]

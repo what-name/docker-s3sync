@@ -7,9 +7,10 @@ set -o pipefail
 OPTION="$1"
 ACCESS_KEY=${ACCESS_KEY:?"ACCESS_KEY required"}
 SECRET_KEY=${SECRET_KEY:?"SECRET_KEY required"}
+ROLEARN=${ROLEARN}
 S3PATH=${S3PATH:?"S3_PATH required"}
 CRON_SCHEDULE=${CRON_SCHEDULE:-0 * * * *}
-S3CMDPARAMS=${S3CMDPARAMS}
+S3SYNCPARAMS=${S3SYNCPARAMS}
 
 LOCKFILE="/tmp/aws-s3.lock"
 LOG="/var/log/cron.log"
@@ -18,6 +19,7 @@ echo "[default]" > /root/.aws/credentials
 echo "aws_access_key_id = $ACCESS_KEY" >> /root/.aws/credentials
 echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
 echo "[default]" > /root/.aws/config
+echo "role_arn=$ROLEARN" > /root/.aws/config
 
 if [ ! -e $LOG ]; then
   touch $LOG
@@ -32,11 +34,12 @@ if [[ $OPTION = "start" ]]; then
   ls -F /data
   echo
 
+  ##### THIS IS NOT GONNA WORK!!! FIXME 
   echo "Adding CRON schedule: $CRON_SCHEDULE"
   CRONENV="$CRONENV ACCESS_KEY=$ACCESS_KEY"
   CRONENV="$CRONENV SECRET_KEY=$SECRET_KEY"
   CRONENV="$CRONENV S3PATH=$S3PATH"
-  CRONENV="$CRONENV S3CMDPARAMS=\"$S3CMDPARAMS\""
+  CRONENV="$CRONENV S3SYNCPARAMS=\"$S3SYNCPARAMS\""
   echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" >> $CRONFILE
 
   echo "Starting CRON scheduler: $(date)"
@@ -53,8 +56,8 @@ elif [[ $OPTION = "backup" ]]; then
     touch $LOCKFILE
   fi
 
-  echo "Executing aws s3 sync /data/ $S3PATH $S3CMDPARAMS..." | tee -a $LOG
-  /usr/local/bin/aws s3 sync /data/ $S3PATH $S3CMDPARAMS 2>&1 | tee -a $LOG
+  echo "Executing aws s3 sync /data/ $S3PATH $S3SYNCPARAMS..." | tee -a $LOG
+  /usr/local/bin/aws s3 sync /data/ $S3PATH $S3SYNCPARAMS 2>&1 | tee -a $LOG
   rm -f $LOCKFILE
   echo "Finished copy: $(date)" | tee -a $LOG
 
