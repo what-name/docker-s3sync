@@ -5,31 +5,46 @@ set -o errexit
 set -o pipefail
 
 OPTION="$1"
-ACCESS_KEY=${ACCESS_KEY:?"ACCESS_KEY required"}
-SECRET_KEY=${SECRET_KEY:?"SECRET_KEY required"}
-ROLEARN=${ROLEARN}
-S3PATH=${S3PATH:?"S3_PATH required"}
+
+ACCESS_KEY=${ACCESS_KEY}
+SECRET_KEY=${SECRET_KEY}
+S3PATH=${S3PATH}
 CRON_SCHEDULE=${CRON_SCHEDULE:-0 * * * *}
 S3SYNCPARAMS=${S3SYNCPARAMS}
 
 LOCKFILE="/tmp/aws-s3.lock"
 LOG="/var/log/cron.log"
 
-echo "[default_source]" > /root/.aws/credentials
-echo "aws_access_key_id = $ACCESS_KEY" >> /root/.aws/credentials
-echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
-echo "[default_source]" > /root/.aws/config
-echo "" >> /root/.aws/config
-echo "[default]" >> /root/.aws/config
-echo "role_arn=$ROLEARN" >> /root/.aws/config
-echo "source_profile=default_source" >> /root/.aws/config
+# Check if ROLE_ARN is supplied
+if [[ -v ROLE_ARN ]]; then
+  ROLE_ARN=${ROLE_ARN}
+
+  echo "[default_source]" > /root/.aws/credentials
+  echo "aws_access_key_id=$ACCESS_KEY" >> /root/.aws/credentials
+  echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
+  echo "[default_source]" > /root/.aws/config
+  echo "" >> /root/.aws/config
+  echo "[default]" >> /root/.aws/config
+  echo "role_arn=$ROLE_ARN" >> /root/.aws/config
+  echo "source_profile=default_source" >> /root/.aws/config
+else
+  echo "[default]" > /root/.aws/credentials
+  echo "aws_access_key_id=$ACCESS_KEY" >> /root/.aws/credentials
+  echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
+  echo "[default]" > /root/.aws/config
+fi
+
+# delete me
+cat /root/.aws/credentials
+cat /root/.aws/config
+
 
 if [ ! -e $LOG ]; then
   touch $LOG
 fi
 
 if [[ $OPTION = "start" ]]; then
-  CRONFILE="/etc/cron.d/s3backup"
+  CRONFILE="/etc/cron.d/s3sync"
   CRONENV=""
 
   echo "Found the following files and directores mounted under /data:"
@@ -38,12 +53,12 @@ if [[ $OPTION = "start" ]]; then
   echo
 
   echo "Adding CRON schedule: $CRON_SCHEDULE"
-  CRONENV="$CRONENV ACCESS_KEY=$ACCESS_KEY"
-  CRONENV="$CRONENV SECRET_KEY=$SECRET_KEY"
-  CRONENV="$CRONENV ROLEARN=$ROLEARN"
   CRONENV="$CRONENV S3PATH=$S3PATH"
   CRONENV="$CRONENV S3SYNCPARAMS=\"$S3SYNCPARAMS\""
   echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" >> $CRONFILE
+
+  #delete me
+  cat $CRONFILE
 
   echo "Starting CRON scheduler: $(date)"
   cron
