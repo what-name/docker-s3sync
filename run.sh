@@ -19,19 +19,20 @@ LOG="/var/log/cron.log"
 if [[ -v ROLE_ARN ]]; then
   ROLE_ARN=${ROLE_ARN}
 
-  echo "[default_source]" > /root/.aws/credentials
+  echo "[source]" > /root/.aws/credentials
   echo "aws_access_key_id=$ACCESS_KEY" >> /root/.aws/credentials
   echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
-  echo "[default_source]" > /root/.aws/config
+  echo "region=eu-central-1" >> /root/.aws/credentials
+  echo "[source]" > /root/.aws/config
   echo "" >> /root/.aws/config
-  echo "[default]" >> /root/.aws/config
+  echo "[s3sync]" >> /root/.aws/config
   echo "role_arn=$ROLE_ARN" >> /root/.aws/config
-  echo "source_profile=default_source" >> /root/.aws/config
+  echo "source_profile=source" >> /root/.aws/config
 else
-  echo "[default]" > /root/.aws/credentials
+  echo "[s3sync]" > /root/.aws/credentials
   echo "aws_access_key_id=$ACCESS_KEY" >> /root/.aws/credentials
   echo "aws_secret_access_key=$SECRET_KEY" >> /root/.aws/credentials
-  echo "[default]" > /root/.aws/config
+  echo "[s3sync]" > /root/.aws/config
 fi
 
 # delete me
@@ -53,6 +54,9 @@ if [[ $OPTION = "start" ]]; then
   echo
 
   echo "Adding CRON schedule: $CRON_SCHEDULE"
+  CRONENV="$CRONENV AWS_CONFIG_FILE=/root/.aws/config"
+  CRONENV="$CRONENV AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials" 
+  CRONENV="$CRONENV HOME=/root"
   CRONENV="$CRONENV S3PATH=$S3PATH"
   CRONENV="$CRONENV S3SYNCPARAMS=\"$S3SYNCPARAMS\""
   echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" >> $CRONFILE
@@ -65,6 +69,13 @@ if [[ $OPTION = "start" ]]; then
   exec tail -f $LOG 2> /dev/null
 
 elif [[ $OPTION = "backup" ]]; then
+  #echo "aws sts get-caller-identity" | tee $LOG
+  #/usr/local/bin/aws sts get-caller-identity 2>&1 | tee -a $LOG
+  echo "aws configure gets" | tee $LOG
+  /usr/local/bin/aws configure get profile.s3sync.aws_access_key_id 2>&1 | tee -a $LOG
+  /usr/local/bin/aws configure get profile.s3sync.aws_secret_access_key 2>&1 | tee -a $LOG
+  /usr/local/bin/aws configure get profile.s3sync.role_arn 2>&1 | tee -a $LOG
+
   echo "Starting copy: $(date)" | tee $LOG
 
   if [ -f $LOCKFILE ]; then
@@ -75,7 +86,7 @@ elif [[ $OPTION = "backup" ]]; then
   fi
 
   echo "Executing aws s3 sync /data/ $S3PATH $S3SYNCPARAMS..." | tee -a $LOG
-  /usr/local/bin/aws s3 sync /data/ $S3PATH $S3SYNCPARAMS 2>&1 | tee -a $LOG
+  /usr/local/bin/aws s3 sync /data/ $S3PATH $S3SYNCPARAMS --profile s3sync 2>&1 | tee -a $LOG
   rm -f $LOCKFILE
   echo "Finished copy: $(date)" | tee -a $LOG
 
