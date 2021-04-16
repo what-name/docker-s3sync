@@ -15,16 +15,18 @@ To tell s3backup what to back up, mount your desired volumes under the
 s3backup is configured by setting the following environment variables during
 the launch of the container.
 
-FIXME put this into a table
-- ACCESS_KEY - your AWS access key
-- SECRET_KEY - your AWS secret key
-- S3PATH - your S3 bucket and path
-- S3SYNCPARAMS - custom parameters to aws s3 sync [http://docs.aws.amazon.com/cli/latest/reference/s3/sync.html]
+Env var | Description
+--- | ---
+`ACCESS_KEY` | your AWS access key
+`SECRET_KEY` | your AWS secret key
+`REGION` | your bucket's region
+`S3PATH` | your S3 bucket and path
+`S3SYNCPARAMS` | [custom parameters to aws s3 sync](http://docs.aws.amazon.com/cli/latest/reference/s3/sync.html)
 
 Files are by default backed up once every hour. You can customize this behavior
 using an environment variable which uses the standard CRON notation.
 
-- `CRON_SCHEDULE` - set to `0 * * * *` by default, which means every hour.
+- `CRON_SCHEDULE` - set to `0 * * * *` by default, which means every hour. *It's not recommended to set it to more frequent than this.*
 
 ## Example invocation
 
@@ -36,25 +38,27 @@ docker run \
 -v /home/user:/data/user:ro \
 -e "ACCESS_KEY=AWS_ACCESS_KEY_HERE" \
 -e "SECRET_KEY=AWS_SECRET_KEY_HERE" \
--e "S3PATH=s3://BUCKET_NAME_HERE/" \
+-e "REGION=eu-central-1" \
+-e "S3PATH=s3://BUCKET_NAME_HERE" \
 -e "CRON_SCHEDULE=0 3 * * *" \
 whatname/docker-s3sync
 ```
 
 #### Advanced run
-If you want more customization on the S3 side, you can use the `S3SYNCPARAMS` to input `aws s3 sync` CLI parameters such as `--delete`. You can also use an IAM role that the user with the provided AWS Access Keys should assume to perform the sync. If not present, the pair of access and secret keys will be used directly.
+If you want more customization on the S3 side, you can use the `S3SYNCPARAMS` to input `aws s3 sync` CLI parameters such as `--delete`.
 
-This will sync both the `/home/user` and `/opt/files` local folders to `s3://your-bucket-name/this_prefix/` and **delete everything else** that's under that prefix. Upon sync, the contents of `s3://your-bucket-name/this_prefix/` will only be the two folders [and their files] that you just synced.
+This will sync both the `/home/user` and `/opt/files` local folders to `s3://your-bucket-name/this_prefix/` and **delete everything else** that's inside that prefix. Upon sync, the contents of `s3://your-bucket-name/this_prefix/` will only be the two folders [and their files] that you just synced.
+
 ```
 docker run \
 -v /home/user:/data/user:ro \
 -v /opt/files:/data/files:ro\
 -e "ACCESS_KEY=AWS_ACCESS_KEY_HERE" \
 -e "SECRET_KEY=AWS_SECRET_KEY_HERE" \
--e "ROLEARN=YOUR_ROLES_ARN_HERE" \
--e "S3PATH=s3://BUCKET_NAME_HERE/this_prefix/" \
+-e "REGION=eu-central-1" \
+-e "S3PATH=s3://BUCKET_NAME_HERE/this_prefix" \
 -e "S3SYNCPARAMS=--delete" \
--e "CRON_SCHEDULE=* * * * *" \
+-e "CRON_SCHEDULE=* 0 * * *" \
 whatname/docker-s3sync
 ```
 
@@ -62,3 +66,7 @@ whatname/docker-s3sync
 ```
 
 ```
+
+## Future improvements
+#### Ability to assume role automatically
+You can also use an IAM role that the user with the provided AWS Access Keys should assume to perform the sync. If not present, the pair of access and secret keys will be used directly.
