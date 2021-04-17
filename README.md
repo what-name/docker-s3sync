@@ -15,13 +15,13 @@ To tell s3backup what to back up, mount your desired volumes under the
 s3backup is configured by setting the following environment variables during
 the launch of the container.
 
-Env var | Description
---- | ---
-`ACCESS_KEY` | your AWS access key
-`SECRET_KEY` | your AWS secret key
-`REGION` | your bucket's region
-`S3PATH` | your S3 bucket and path
-`S3SYNCPARAMS` | [custom parameters to aws s3 sync](http://docs.aws.amazon.com/cli/latest/reference/s3/sync.html)
+Env var | Description | Example
+--- | --- | ---
+`ACCESS_KEY` | your AWS access key | `AKIABV38RBV38RBV38B3`
+`SECRET_KEY` | your AWS secret key | `ubuUbuBubUuuBbuveubviurvurud6rDU3qpU`
+`REGION` | your bucket's region | `eu-central-1`
+`S3PATH` | your S3 bucket and path | `s3://my-nice-bucket`
+`S3SYNCPARAMS` | [custom parameters to aws s3 sync](http://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) | `--delete`
 
 Files are by default backed up once every hour. You can customize this behavior
 using an environment variable which uses the standard CRON notation.
