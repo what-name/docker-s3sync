@@ -1,9 +1,8 @@
 # s3sync
 ## Info
 S3sync is a Docker container which backs up one or more folders to S3 using
-the aws cli tool. This is forked from joch's [original S3Backup container]
-(https://github.com/joch/docker-s3backup) but has been modified to make use of the
-aws cli rather than the outdated s3cmd. This has been also updated to Python 3.
+the aws cli tool. This is forked from joch's [original S3Backup container](https://github.com/joch/docker-s3backup) 
+but has been modified to make use of the aws cli rather than the outdated s3cmd. This has been also updated to Python 3.
 
 ## Usage
 
