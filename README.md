@@ -61,9 +61,7 @@ whatname/docker-s3sync
 ```
 
 ## Unraid
-```
-
-```
+s3sync is available on the Unraid Community Applications. See the [Support Thread](https://forums.unraid.net/topic/106320-support-what-name-s3sync/?tab=comments#comment-979903) for more information, or search for `s3sync` in CA.
 
 ## Future improvements (to-do)
 #### Ability to assume role automatically
