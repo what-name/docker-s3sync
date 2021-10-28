@@ -36,7 +36,7 @@ if [[ $OPTION = "start" ]]; then
   CRONENV="$CRONENV AWS_DEFAULT_REGION=$REGION"
   CRONENV="$CRONENV S3PATH=$S3PATH"
   CRONENV="$CRONENV S3SYNCPARAMS=\"$S3SYNCPARAMS\""
-  echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" >> $CRONFILE
+  echo "$CRON_SCHEDULE root $CRONENV bash /run.sh backup" > $CRONFILE
 
   echo "Starting CRON scheduler: $(date)"
   cron
